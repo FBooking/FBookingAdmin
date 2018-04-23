@@ -9,11 +9,16 @@ class TableAllStadiums extends Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
-            page: 1,
-            perPage: 10,
             stadiums: [],
             categories: [],
             districts: [],
+            searchOptions: {
+                page: 1,
+                perPage: 10,
+                districtIds: null,
+                categoryIds: null,
+                name: null,
+            }
         }
         this.addStadium = this.addStadium.bind(this);
         this.deleteStadium = this.deleteStadium.bind(this);
@@ -23,7 +28,7 @@ class TableAllStadiums extends Component {
 
     async componentDidMount() {
         const { page, perPage } = this.state;
-        const stadiums = await Fetch.get(`stadiums?page=${page}&per_page=${perPage}`);
+        const stadiums = await Fetch.post('stadiums', this.state.searchOptions);
         const categories = await Fetch.get('categories');
         const districts = await Fetch.get('districts');
         this.setState({ stadiums, categories, districts })
