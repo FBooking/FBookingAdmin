@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Layout, Menu, Breadcrumb, Icon } from 'antd';
 
+import TableAllStadiums from '../../component/dashboard/tab/stadium/TableAllStadiums'
+
 
 class Dashboard extends Component {
     constructor(props, context) {
@@ -74,7 +76,7 @@ class Dashboard extends Component {
                             <Breadcrumb.Item>App</Breadcrumb.Item>
                         </Breadcrumb>
                         <Content style={{ background: '#fff', padding: 24, margin: 0, minHeight: 280 }}>
-                            Content
+                            <TableAllStadiums />
                         </Content>
                     </Layout>
                 </Layout>

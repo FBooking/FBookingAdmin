@@ -9,6 +9,7 @@ const requests = axios.create({
     // Authorization: `Token ${token}`,
     Accept: 'application/json',
     'Content-Type': 'application/json',
+    'Cache-Control': 'no-cache',
   },
 });
 
@@ -18,7 +19,7 @@ const get = async (url, timeout = 10000) => {
   console.log('get', url);
   const res = await requests.get(url, { timeout });
   try {
-    if (res.status === 200) {
+    if (res.status === 201) {
       return res.data;
     }
     return {};
@@ -32,7 +33,7 @@ const post = async (url, reqParams, timeout = 10000) => {
   console.log('post', url, reqParams);
   const res = await requests.post(url, reqParams);
   try {
-    if (res.status === 200) {
+    if (res.status === 201) {
       return res.data;
     }
     return {};
@@ -46,7 +47,7 @@ const Delete = async (url, reqParams, timeout = 10000) => {
   console.log('delete', url, reqParams);
   const res = await requests.delete(url);
   try {
-    if (res.status === 200) {
+    if (res.status === 201) {
       return res.data;
     }
     return {};
