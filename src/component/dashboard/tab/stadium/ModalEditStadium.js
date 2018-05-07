@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 import {
     Form, Select, InputNumber, Switch, Radio, Input, DatePicker,
     Slider, Button, Upload, Icon, Rate, Modal,
@@ -8,24 +9,28 @@ import {
 import UploadImage from '../../../common/UploadImage'
 import Fetch from '../../../../core/services/fetch'
 
+const initialState = {
+    visible: false,
+    isUpdate: false,
+    stadium: {
+        _id: null,
+        name: null,
+        address: null,
+        categoryId: null,
+        districtId: null,
+        dealDate: null,
+        description: null,
+        thumbnail: null,
+        isActive: false,
+    },
+    categoriesSelect: [],
+    districtSelect: [],
+}
+
 class ModalEditStadium extends Component {
     constructor(props, context) {
         super(props, context);
-        this.state = {
-            visible: false,
-            isUpdate: false,
-            stadium: {
-                _id: null,
-                name: null,
-                address: null,
-                categoryId: null,
-                districtId: null,
-                dealDate: null,
-                description: null,
-                thumbnail: null,
-                isActive: false,
-            }
-        }
+        this.state = initialState;
         this.toggle = this.toggle.bind(this);
         this.handleOpen = this.handleOpen.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -33,14 +38,23 @@ class ModalEditStadium extends Component {
     }
 
     handleOpen(stadium, isUpdate = false) {
-        this.setState({ stadium, visible: true, isUpdate });
+        const { categoryId, districtId } = stadium;
+        const categoriesSelect = categoryId.map((category, idx) => {
+            return category.name
+        })
+        const districtSelect = districtId.name;
+        this.setState({ stadium, visible: true, isUpdate, categoriesSelect, districtSelect });
     }
 
     toggle() {
+        if (this.state.visible) this.setState(initialState)
         this.setState({ visible: !this.state.visible });
     }
 
     handleChange(prop, value) {
+        if (prop === 'districtId') {
+            console.log(value);
+        }
         this.setState({
             stadium: { ...this.state.stadium, [prop]: value }
         });
@@ -54,9 +68,9 @@ class ModalEditStadium extends Component {
         if (response) {
             if (!isUpdate) this.props.addStadium(response)
             if (isUpdate) this.props.updateStadium(response)
-            this.setState({ visible: false })
+            this.setState(initialState)
         }
-        console.log(this.state.stadium)
+        console.log('stadium', stadium)
     }
 
     render() {
@@ -105,10 +119,9 @@ class ModalEditStadium extends Component {
                     >
                         {this.state.visible &&
                             <Select
-                                mode="multiple"
                                 style={{ width: '100%' }}
                                 placeholder="Chọn khu vực"
-                                // defaultValue={['a10', 'c12']}
+                                value={this.state.districtSelect}
                                 onChange={(value) => this.handleChange('districtId', value)}
                             >
                                 {(districts.map((district, idx) => {
@@ -127,6 +140,7 @@ class ModalEditStadium extends Component {
                                 mode="multiple"
                                 style={{ width: '100%' }}
                                 placeholder="Chọn danh mục"
+                                value={this.state.categoriesSelect}
                                 onChange={(value) => this.handleChange('categoryId', value)}
                             >
                                 {(categories.map((category, idx) => {
@@ -143,6 +157,7 @@ class ModalEditStadium extends Component {
                         <DatePicker
                             style={{ width: '100%' }}
                             placeholder="Chọn ngày"
+                            value={(dealDate ? moment(dealDate, 'YYYY/MM/DD') : null)}
                             onChange={(time, timeString) => {
                                 console.log(timeString);
                                 this.handleChange('dealDate', timeString)
@@ -169,6 +184,7 @@ class ModalEditStadium extends Component {
                         <div className="dropbox">
                             <UploadImage
                                 changeFile={(imagesUrl) => this.handleChange('thumbnail', imagesUrl)}
+                                fileList={thumbnail || []}
                             />
                         </div>
                     </FormItem>
@@ -178,6 +194,7 @@ class ModalEditStadium extends Component {
                         label="Active"
                     >
                         <Switch
+                            checked={isActive}
                             onChange={(checked) => this.handleChange('isActive', checked)}
                         />
                     </FormItem>

@@ -5,15 +5,18 @@ import 'antd/dist/antd.css';
 import '../../assests/css/app.css'
 
 import Dashboard from '../dashboard'
+import Layout from '../layout';
 
 class App extends Component {
   render() {
     return (
       <HashRouter>
         <Switch>
-          <Route exact path="/" component={Dashboard} />
+          <Layout>
+            <Route exact path="/dashboard/:tab" component={Dashboard} />
+          </Layout >
         </Switch>
-      </HashRouter>
+      </HashRouter >
     );
   }
 }

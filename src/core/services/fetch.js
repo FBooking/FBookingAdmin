@@ -43,6 +43,20 @@ const post = async (url, reqParams, timeout = 10000) => {
   }
 };
 
+const put = async (url, reqParams, timeout = 10000) => {
+  console.log('put', url, reqParams);
+  const res = await requests.put(url, reqParams);
+  try {
+    if (res.status === 201) {
+      return res.data;
+    }
+    return {};
+  } catch (error) {
+    console.log(error);
+    return {};
+  }
+};
+
 const Delete = async (url, reqParams, timeout = 10000) => {
   console.log('delete', url, reqParams);
   const res = await requests.delete(url);
@@ -57,4 +71,4 @@ const Delete = async (url, reqParams, timeout = 10000) => {
   }
 };
 
-export default { post, get, Delete };
+export default { post, put, get, Delete };

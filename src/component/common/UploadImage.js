@@ -11,13 +11,23 @@ class UploadImage extends Component {
         this.state = {
             previewVisible: false,
             previewImage: '',
-            fileList: [],
+            fileList: this.props.fileList || [],
         }
         this.handleCancel = this.handleCancel.bind(this);
         this.handlePreview = this.handlePreview.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.handleDelete = this.handleDelete.bind(this);
         this.onUpload = this.onUpload.bind(this);
     }
+
+    componentWillReceiveProps(nextProps) {
+        const { fileList } = nextProps;
+        const oldFileList = this.props.findIndex;
+        if (fileList !== oldFileList) {
+            this.setState({ fileList });
+        }
+    }
+
 
     handleCancel() {
         this.setState({ previewVisible: false })
@@ -36,6 +46,15 @@ class UploadImage extends Component {
         this.setState({ fileList: newFileList })
     }
 
+    handleDelete(file) {
+        const { fileList } = this.state;
+        const fileIdx = fileList.findIndex((f, idb) => {
+            return f === file;
+        })
+        fileList.splice(fileIdx, 1);
+        this.setState({ fileList });
+    }
+
     async onUpload(req) {
         const bodyFormData = new FormData();
         bodyFormData.set('file', req.file);
@@ -48,8 +67,7 @@ class UploadImage extends Component {
             const { fileList } = this.state
             fileList.splice(fileList.length - 1, 1, res)
             this.setState({ fileList }, () => {
-                const imagesUrl = flatMapDeep(fileList, ((file) => valuesIn(pick(file, 'url'))));
-                this.props.changeFile(imagesUrl)
+                this.props.changeFile(fileList)
             })
         }
     }
@@ -70,6 +88,7 @@ class UploadImage extends Component {
                     fileList={fileList}
                     onPreview={this.handlePreview}
                     onChange={this.handleChange}
+                    onRemove={this.handleDelete}
                 >
                     {uploadButton}
                 </Upload>
@@ -83,6 +102,7 @@ class UploadImage extends Component {
 
 UploadImage.propTypes = {
     changeFile: PropTypes.func.isRequired,
+    fileList: PropTypes.array.isRequired,
 };
 
 export default UploadImage;
