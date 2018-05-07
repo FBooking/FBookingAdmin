@@ -2,19 +2,20 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Form, Switch, Input, Modal } from 'antd';
 
-import Fetch from '../../../../core/services/fetch';
+import UploadImage from '../../common/UploadImage';
+import Fetch from '../../../core/services/fetch';
 
 const initialState = {
     visible: false,
     isUpdate: false,
-    category: {
+    amenitie: {
         _id: null,
         name: null,
         isActive: false,
+        thumbnail: [],
     },
 }
-
-class ModalEditCategory extends Component {
+class ModalEditAmenitie extends Component {
     constructor(props, context) {
         super(props, context);
         this.state = initialState;
@@ -24,22 +25,22 @@ class ModalEditCategory extends Component {
         this.toggle = this.toggle.bind(this);
     }
 
-    handleOpen(category, isUpdate = false) {
-        this.setState({ category, isUpdate, visible: true })
+    handleOpen(amenitie, isUpdate = false) {
+        this.setState({ amenitie, isUpdate, visible: true })
     }
 
     handleChange(prop, value) {
-        this.setState({ category: { ...this.state.category, [prop]: value } })
+        this.setState({ amenitie: { ...this.state.amenitie, [prop]: value } })
     }
 
     async handleOk() {
-        const { isUpdate, category } = this.state;
+        const { isUpdate, amenitie } = this.state;
         let response;
-        if (isUpdate) response = await Fetch.put('category', category)
-        if (!isUpdate) response = await Fetch.post('category', category)
+        if (isUpdate) response = await Fetch.put('amenitie', amenitie)
+        if (!isUpdate) response = await Fetch.post('amenitie', amenitie)
         if (response) {
-            if (isUpdate) this.props.updateCategory(response);
-            if (!isUpdate) this.props.addCategory(response);
+            if (isUpdate) this.props.updateAmenitie(response);
+            if (!isUpdate) this.props.addAmenitie(response);
             this.setState(initialState)
         }
     }
@@ -48,15 +49,14 @@ class ModalEditCategory extends Component {
         if (this.state.visible) this.setState(initialState);
         this.setState({ visible: !this.state.visible });
     }
-
     render() {
         const FormItem = Form.Item;
         const formItemLayout = {
             labelCol: { span: 6 },
             wrapperCol: { span: 14 },
         };
-        const { visible, isUpdate, category } = this.state;
-        const { name, isActive } = category;
+        const { visible, isUpdate, amenitie } = this.state;
+        const { name, thumbnail, isActive } = amenitie;
         return (
             <Modal
                 title={(isUpdate) ? 'Cập nhật thông tin sân' : 'Thêm sân'}
@@ -75,7 +75,15 @@ class ModalEditCategory extends Component {
                             value={name || ''}
                         />
                     </FormItem>
-
+                    <FormItem
+                        {...formItemLayout}
+                        label="Ảnh"
+                    >
+                        <UploadImage
+                            changeFile={(imagesUrl) => this.handleChange('thumbnail', imagesUrl)}
+                            fileList={thumbnail || []}
+                        />
+                    </FormItem>
                     <FormItem
                         {...formItemLayout}
                         label="Active"
@@ -91,9 +99,9 @@ class ModalEditCategory extends Component {
     }
 }
 
-ModalEditCategory.propTypes = {
-    addCategory: PropTypes.func,
-    updateCategory: PropTypes.func,
+ModalEditAmenitie.propTypes = {
+    addAmenitie: PropTypes.func,
+    updateAmenitie: PropTypes.func,
 };
 
-export default ModalEditCategory;
+export default ModalEditAmenitie;

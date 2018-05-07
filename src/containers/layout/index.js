@@ -62,6 +62,7 @@ class LayoutDashboard extends Component {
                             style={{ height: '100%', borderRight: 0 }}
                         >
                             <Menu.Item key="stadium"><span><Icon type="bar-chart" />Sân bóng</span></Menu.Item>
+                            <Menu.Item key="amenitie"><span><Icon type="solution" />Dịch vụ</span></Menu.Item>
                             <Menu.Item key="category"><span><Icon type="switcher" />Category</span></Menu.Item>
                             <SubMenu key="address" title={<span><Icon type="environment" />Địa chỉ</span>}>
                                 <Menu.Item key="5">option5</Menu.Item>

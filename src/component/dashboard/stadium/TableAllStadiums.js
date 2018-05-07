@@ -5,7 +5,7 @@ import { Table, Button, notification } from 'antd';
 
 import ModalEditStadium from './ModalEditStadium';
 import TableChildStadiums from './TableChildStadiums';
-import Fetch from '../../../../core/services/fetch';
+import Fetch from '../../../core/services/fetch';
 
 class TableAllStadiums extends Component {
     constructor(props, context) {

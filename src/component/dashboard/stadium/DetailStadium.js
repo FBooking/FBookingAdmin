@@ -7,11 +7,11 @@ import {
 } from 'antd';
 
 import TableChildStadiums from './TableChildStadiums';
-import TableAmenities from './TableAmenities';
+// import TableAmenities from './TableAmenities';
 
-import UploadImage from '../../../common/UploadImage';
-import GoogleMaps from '../../../common/GoogleMaps';
-import Fetch from '../../../../core/services/fetch';
+import UploadImage from '../../common/UploadImage';
+import GoogleMaps from '../../common/GoogleMaps';
+import Fetch from '../../../core/services/fetch';
 
 class DetailStadium extends Component {
     constructor(props, context) {

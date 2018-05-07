@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Table, Button, notification, Switch } from 'antd';
 
 import ModalEditCategory from './ModalEditCategory';
-import Fetch from '../../../../core/services/fetch';
+import Fetch from '../../../core/services/fetch';
 
 class TableAllStadiums extends Component {
     constructor(props, context) {

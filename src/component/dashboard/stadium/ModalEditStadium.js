@@ -6,8 +6,8 @@ import {
     Slider, Button, Upload, Icon, Rate, Modal,
 } from 'antd';
 
-import UploadImage from '../../../common/UploadImage'
-import Fetch from '../../../../core/services/fetch'
+import UploadImage from '../../common/UploadImage'
+import Fetch from '../../../core/services/fetch'
 
 const initialState = {
     visible: false,
