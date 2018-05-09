@@ -28,7 +28,8 @@ class index extends Component {
                     description: response.message || 'Có một lỗi không mong muốn đã xảy ra',
                 })
             } else {
-                this.props.loginSuccess(response.user);
+                this.props.history.push('/dashboard/reservation')
+                console.log(response.user);
             }
 
         }
@@ -43,11 +44,14 @@ class index extends Component {
         };
         const { email, userId } = this.state
         return (
-            <div style={{
-                backgroundImage: 'url("https://d2v9y0dukr6mq2.cloudfront.net/video/thumbnail/5LTJsFT/football-stadium-background-animation_4kiej7gr__F0000.png")',
-                minWidth: '100%',
-                minHeight: '100%',
-            }}>
+            <div
+                id="login"
+                style={{
+                    backgroundImage: 'url("https://d2v9y0dukr6mq2.cloudfront.net/video/thumbnail/5LTJsFT/football-stadium-background-animation_4kiej7gr__F0000.png")',
+                    minWidth: '100%',
+                    minHeight: '100%',
+                }}
+            >
                 <Content style={{
                     top: '50%',
                     left: '50%',
@@ -115,6 +119,7 @@ class index extends Component {
 
 index.propTypes = {
     loginSuccess: PropTypes.func,
+    history: PropTypes.object,
 };
 
 export default index;

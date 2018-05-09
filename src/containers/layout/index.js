@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from "react-router-dom";
 import { Layout, Menu, Breadcrumb, Icon } from 'antd';
+import { capitalize } from 'lodash';
 
-import TableAllStadiums from '../../component/dashboard/tab/stadium/TableAllStadiums'
-import TableAllCategories from '../../component/dashboard/tab/category/TableAllCategories'
+import TableAllStadiums from '../../component/dashboard/stadium/TableAllStadiums'
+import TableAllCategories from '../../component/dashboard/category/TableAllCategories'
 
 
 class LayoutDashboard extends Component {
@@ -61,28 +62,24 @@ class LayoutDashboard extends Component {
                             defaultOpenKeys={['stadium']}
                             style={{ height: '100%', borderRight: 0 }}
                         >
-                            <Menu.Item key="stadium"><span><Icon type="bar-chart" />Sân bóng</span></Menu.Item>
-                            <Menu.Item key="amenitie"><span><Icon type="solution" />Dịch vụ</span></Menu.Item>
+                            <Menu.Item key="reservation"><span><Icon type="shopping-cart" />Reservation</span></Menu.Item>
+                            <Menu.Item key="stadium"><span><Icon type="bar-chart" />Stadium</span></Menu.Item>
+                            <Menu.Item key="amenitie"><span><Icon type="solution" />Amenitie</span></Menu.Item>
                             <Menu.Item key="category"><span><Icon type="switcher" />Category</span></Menu.Item>
-                            <SubMenu key="address" title={<span><Icon type="environment" />Địa chỉ</span>}>
-                                <Menu.Item key="5">option5</Menu.Item>
-                                <Menu.Item key="6">option6</Menu.Item>
-                                <Menu.Item key="7">option7</Menu.Item>
-                                <Menu.Item key="8">option8</Menu.Item>
-                            </SubMenu>
-                            <SubMenu key="session" title={<span><Icon type="book" />Lịch đặt</span>}>
+                            <Menu.Item key="district"><span><Icon type="environment" />District</span></Menu.Item>
+
+                            {/* <SubMenu key="session" title={<span><Icon type="book" />Lịch đặt</span>}>
                                 <Menu.Item key="9">option9</Menu.Item>
                                 <Menu.Item key="10">option10</Menu.Item>
                                 <Menu.Item key="11">option11</Menu.Item>
                                 <Menu.Item key="12">option12</Menu.Item>
-                            </SubMenu>
+                            </SubMenu> */}
                         </Menu>
                     </Sider>
                     <Layout style={{ padding: '0 24px 24px' }}>
                         <Breadcrumb style={{ margin: '16px 0' }}>
-                            <Breadcrumb.Item>Home</Breadcrumb.Item>
-                            <Breadcrumb.Item>List</Breadcrumb.Item>
-                            <Breadcrumb.Item>App</Breadcrumb.Item>
+                            <Breadcrumb.Item>Dashboard</Breadcrumb.Item>
+                            <Breadcrumb.Item>{capitalize(this.state.tabActive)}</Breadcrumb.Item>
                         </Breadcrumb>
                         <Content style={{ background: '#fff', padding: 24, margin: 0, minHeight: 280 }}>
                             {this.props.children}

@@ -1,7 +1,7 @@
 #root {
     height: 100%;;
 }
-.ant-form-item-label label {
+#login .ant-form-item-label label {
     color: #fff !important;
 }
 .m-5 {

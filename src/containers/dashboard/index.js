@@ -6,6 +6,8 @@ import TableAllStadiums from '../../component/dashboard/stadium/TableAllStadiums
 import DetailStadium from '../../component/dashboard/stadium/DetailStadium'
 import TableAllCategories from '../../component/dashboard/category/TableAllCategories'
 import TableAllAmenities from '../../component/dashboard/amenitie/TableAllAmenities'
+import TableAllDistrict from '../../component/dashboard/district/TableAllDistrict'
+import TableAllReservation from '../../component/dashboard/reservation/TableAllReservation'
 import Fetch from '../../core/services/fetch';
 
 class Dashboard extends Component {
@@ -19,6 +21,9 @@ class Dashboard extends Component {
         this.addAmenitie = this.addAmenitie.bind(this);
         this.updateAmenitie = this.updateAmenitie.bind(this);
         this.deleteAmentitie = this.deleteAmentitie.bind(this);
+        this.addDistrict = this.addDistrict.bind(this);
+        this.updateDistrict = this.updateDistrict.bind(this);
+        this.deleteDistrict = this.deleteDistrict.bind(this);
     }
 
     async componentDidMount() {
@@ -35,11 +40,9 @@ class Dashboard extends Component {
     }
 
     updateAmenitie(amenitie) {
-        console.log('amenitie', amenitie);
         const { amenities } = this.state;
         const newAmenitie = amenities.map((a) => {
             if (a._id === amenitie._id) {
-                console.log('on here');
                 return amenitie;
             }
             return a;
@@ -51,6 +54,29 @@ class Dashboard extends Component {
         const { amenities } = this.state;
         const newAmenitie = amenities.filter((a) => a !== amenitie)
         this.setState({ amenities: newAmenitie });
+    }
+
+    addDistrict(district) {
+        const { districts } = this.state;
+        const newDistricts = [...districts, district];
+        this.setState({ districts: newDistricts });
+    }
+
+    updateDistrict(district) {
+        const { districts } = this.state;
+        const newDistricts = districts.map((d) => {
+            if (d._id === district._id) {
+                return district;
+            }
+            return d;
+        })
+        this.setState({ districts: newDistricts });
+    }
+
+    deleteDistrict(district) {
+        const { districts } = this.state;
+        const newDistricts = districts.filter((d) => d._id !== district._id);
+        this.setState({ districts: newDistricts });
     }
 
     render() {
@@ -79,6 +105,22 @@ class Dashboard extends Component {
                         deleteAmentitie={this.deleteAmentitie}
                         addAmenitie={this.addAmenitie}
                         updateAmenitie={this.updateAmenitie}
+                    />
+                }
+                {tab === 'district' &&
+                    <TableAllDistrict
+                        data={this.state.districts}
+                        deleteDistrict={this.deleteDistrict}
+                        addDistrict={this.addDistrict}
+                        updateDistrict={this.updateDistrict}
+                    />
+                }
+                {tab === 'reservation' &&
+                    <TableAllReservation
+                    // data={this.state.districts}
+                    // deleteDistrict={this.deleteDistrict}
+                    // addDistrict={this.addDistrict}
+                    // updateDistrict={this.updateDistrict}
                     />
                 }
             </React.Fragment>

@@ -22,8 +22,8 @@ class TableAllAmenities extends Component {
     }
 
     async deleteAmentitie(amenitie) {
-        const req = await Fetch.Delete(`amenitie/${amenitie._id}`);
-        if (req.ok) {
+        const response = await Fetch.Delete(`amenitie/${amenitie._id}`);
+        if (response.ok) {
             notification.success({
                 message: 'Thành công!',
                 description: 'Xóa thông tin dịch vụ thành công.',
@@ -80,7 +80,8 @@ class TableAllAmenities extends Component {
                         <UploadImage
                             changeFile={(imagesUrl) => this.handleChange('thumbnail', imagesUrl)}
                             fileList={record.thumbnail || []}
-                        />}
+                        />
+                    }
                     dataSource={this.props.data}
                 />
             </React.Fragment>

@@ -1,52 +1,51 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Form, Switch, Input, Modal } from 'antd';
+import { Form, Input, Modal } from 'antd';
 
 import Fetch from '../../../core/services/fetch';
 
 const initialState = {
-    visible: false,
-    isUpdate: false,
-    category: {
-        _id: null,
+    district: {
         name: null,
-        isActive: false,
+        code: null,
     },
+    isUpdate: false,
+    visible: false,
 }
 
-class ModalEditCategory extends Component {
+class ModalEditDistrict extends Component {
     constructor(props, context) {
         super(props, context);
         this.state = initialState;
         this.handleOpen = this.handleOpen.bind(this);
+        this.toggle = this.toggle.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleOk = this.handleOk.bind(this);
-        this.toggle = this.toggle.bind(this);
     }
 
-    handleOpen(category, isUpdate = false) {
-        this.setState({ category, isUpdate, visible: true })
-    }
-
-    handleChange(prop, value) {
-        this.setState({ category: { ...this.state.category, [prop]: value } })
-    }
-
-    async handleOk() {
-        const { isUpdate, category } = this.state;
-        let response;
-        if (isUpdate) response = await Fetch.put('category', category)
-        if (!isUpdate) response = await Fetch.post('category', category)
-        if (response) {
-            if (isUpdate) this.props.updateCategory(response);
-            if (!isUpdate) this.props.addCategory(response);
-            this.setState(initialState)
-        }
+    handleOpen(district, isUpdate = false) {
+        this.setState({ district, isUpdate, visible: true })
     }
 
     toggle() {
         if (this.state.visible) this.setState(initialState);
         this.setState({ visible: !this.state.visible });
+    }
+
+    handleChange(prop, value) {
+        this.setState({ district: { ...this.state.district, [prop]: value } })
+    }
+
+    async handleOk() {
+        const { isUpdate, district } = this.state;
+        let response;
+        if (isUpdate) response = await Fetch.put('district', district)
+        if (!isUpdate) response = await Fetch.post('district', district)
+        if (response) {
+            if (isUpdate) this.props.updateDistrict(response);
+            if (!isUpdate) this.props.addDistrict(response);
+            this.setState(initialState)
+        }
     }
 
     render() {
@@ -55,11 +54,11 @@ class ModalEditCategory extends Component {
             labelCol: { span: 6 },
             wrapperCol: { span: 14 },
         };
-        const { visible, isUpdate, category } = this.state;
-        const { name, isActive } = category;
+        const { visible, isUpdate, district } = this.state;
+        const { name, code } = district;
         return (
             <Modal
-                title={(isUpdate) ? 'Cập nhật thông tin category' : 'Thêm category'}
+                title={(isUpdate) ? 'Cập nhật thông tin sân' : 'Thêm sân'}
                 visible={visible}
                 onOk={this.handleOk}
                 onCancel={this.toggle}
@@ -75,14 +74,14 @@ class ModalEditCategory extends Component {
                             value={name || ''}
                         />
                     </FormItem>
-
                     <FormItem
                         {...formItemLayout}
-                        label="Active"
+                        label="Code"
                     >
-                        <Switch
-                            checked={isActive}
-                            onChange={(checked) => this.handleChange('isActive', checked)}
+                        <Input
+                            onChange={(event) => this.handleChange('code', event.target.value)}
+                            placeholder="Code"
+                            value={code || ''}
                         />
                     </FormItem>
                 </Form>
@@ -91,9 +90,9 @@ class ModalEditCategory extends Component {
     }
 }
 
-ModalEditCategory.propTypes = {
-    addCategory: PropTypes.func,
-    updateCategory: PropTypes.func,
+ModalEditDistrict.propTypes = {
+    updateDistrict: PropTypes.func,
+    addDistrict: PropTypes.func,
 };
 
-export default ModalEditCategory;
+export default ModalEditDistrict;
