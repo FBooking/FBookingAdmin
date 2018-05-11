@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Table, Switch } from 'antd';
+import { Table, Switch, Button } from 'antd';
+import { flatMapDeep, valuesIn, pick, includes, each } from 'lodash'
 
 import Fetch from '../../../core/services/fetch';
 
@@ -9,14 +10,29 @@ class TableAllReservation extends Component {
         super(props, context);
         this.state = {
             reservations: [],
+            reservationIds: [],
         }
         this.confirmPayed = this.confirmPayed.bind(this);
+        this.deleteReservations = this.deleteReservations.bind(this);
     }
 
     async componentDidMount() {
         const reservations = await Fetch.get('reservations');
         this.setState({ reservations });
-        console.log(reservations);
+    }
+
+    async deleteReservations() {
+        const { reservationIds, reservations } = this.state;
+        const response = await Fetch.post('delete-reservations', { ids: reservationIds })
+        if (response.success) {
+            const newReservations = [];
+            each(reservations, (reservation) => {
+                if (!includes(reservationIds, reservation._id)) {
+                    newReservations.push(reservation);
+                }
+            })
+            this.setState({ reservations: newReservations, reservationIds: [] });
+        }
     }
 
     async confirmPayed(reservation, payed) {
@@ -81,23 +97,29 @@ class TableAllReservation extends Component {
         ];
         const rowSelection = {
             onChange: (selectedRowKeys, selectedRows) => {
-                console.log(selectedRows);
-            },
-            onSelect: (record, selected, selectedRows) => {
-                console.log(record, selected, selectedRows);
-            },
-            onSelectAll: (selected, selectedRows, changeRows) => {
-                console.log(selected, selectedRows, changeRows);
+                const ids = flatMapDeep(selectedRows, ((reservation) => valuesIn(pick(reservation, '_id'))));
+                this.setState({ reservationIds: ids });
             },
         };
-        const { reservations } = this.state;
+        const { reservations, reservationIds } = this.state;
         return (
-            <Table
-                columns={columns}
-                dataSource={reservations}
-                scroll={{ x: 1300 }}
-                rowSelection={rowSelection}
-            />
+            <React.Fragment>
+                <Button
+                    onClick={this.deleteReservations}
+                    icon="delete"
+                    type="primary"
+                    style={{ marginBottom: 10 }}
+                    disabled={(reservationIds.length === 0)}
+                >
+                    Xóa Reservations
+                </Button>
+                <Table
+                    columns={columns}
+                    dataSource={reservations}
+                    scroll={{ x: 1300 }}
+                    rowSelection={rowSelection}
+                />
+            </React.Fragment>
         );
     }
 }
