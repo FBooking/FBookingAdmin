@@ -78,6 +78,14 @@ class TableAllStadiums extends Component {
 
     }
 
+    addChildStadium(stadiumId, childStadium) {
+        console.log(stadiumId, childStadium);
+    }
+
+    updateChildStadium(stadiumId, childStadium) {
+        console.log(stadiumId, childStadium);
+    }
+
     render() {
         const columns = [
             { title: 'Tên sân', dataIndex: 'name', key: 'name' },
@@ -109,7 +117,15 @@ class TableAllStadiums extends Component {
                 <Table
                     columns={columns}
                     // expandedRowRender={record => <p style={{ margin: 0 }}>{record.description}</p>}
-                    expandedRowRender={record => <TableChildStadiums />}
+                    expandedRowRender={record => {
+                        return (
+                            <TableChildStadiums
+                                data={record.childStadiums}
+                                addChildStadium={(childStadium) => this.addChildStadium(record._id, childStadium)}
+                                updateChildStadium={(childStadium) => this.updateChildStadium(record._id, childStadium)}
+                            />
+                        )
+                    }}
                     dataSource={this.state.stadiums}
                 />
             </React.Fragment>
