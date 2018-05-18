@@ -10,10 +10,10 @@ class TableAllAmenities extends Component {
     constructor(props, context) {
         super(props, context);
         this.deleteAmentitie = this.deleteAmentitie.bind(this);
-        this.addAmenitie = this.addAmenitie.bind(this);
+        this.openModalAddAmenitie = this.openModalAddAmenitie.bind(this);
     }
 
-    addAmenitie() {
+    openModalAddAmenitie() {
         this.modalEditAmenitie.toggle();
     }
 
@@ -61,14 +61,9 @@ class TableAllAmenities extends Component {
             },
         ];
 
-        const data = [
-            { key: 1, name: 'John Brown', age: 32, address: 'New York No. 1 Lake Park', description: 'My name is John Brown, I am 32 years old, living in New York No. 1 Lake Park.' },
-            { key: 2, name: 'Jim Green', age: 42, address: 'London No. 1 Lake Park', description: 'My name is Jim Green, I am 42 years old, living in London No. 1 Lake Park.' },
-            { key: 3, name: 'Joe Black', age: 32, address: 'Sidney No. 1 Lake Park', description: 'My name is Joe Black, I am 32 years old, living in Sidney No. 1 Lake Park.' },
-        ];
         return (
             <React.Fragment>
-                <Button onClick={this.addAmenitie} type="primary" style={{ marginBottom: 10 }}>Thêm dịch vụ</Button>
+                <Button onClick={this.openModalAddAmenitie} type="primary" style={{ marginBottom: 10 }}>Thêm dịch vụ</Button>
                 <ModalEditAmenitie
                     ref={(instance) => this.modalEditAmenitie = instance}
                     addAmenitie={this.props.addAmenitie}

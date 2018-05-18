@@ -34,9 +34,10 @@ class Dashboard extends Component {
     }
 
     addAmenitie(amentitie) {
+        console.log('on here', amentitie);
         const { amenities } = this.state;
-        const newAmenitie = [...amenities, amentitie];
-        this.setState({ amenitie: newAmenitie });
+        const newAmenitie = [amentitie, ...amenities];
+        this.setState({ amenities: newAmenitie });
     }
 
     updateAmenitie(amenitie) {

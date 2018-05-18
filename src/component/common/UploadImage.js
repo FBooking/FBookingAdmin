@@ -58,7 +58,7 @@ class UploadImage extends Component {
     async onUpload(req) {
         const bodyFormData = new FormData();
         bodyFormData.set('file', req.file);
-        const res = await Fetch.post('upload', bodyFormData)
+        const res = await Fetch.post('upload', bodyFormData, 1000000);
         if (res) {
             res.uid = res.public_id
             res.name = res.original_filename

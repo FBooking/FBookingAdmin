@@ -3,7 +3,7 @@ require('es6-promise').polyfill();
 require('isomorphic-fetch');
 
 const requests = axios.create({
-  baseURL: `http://localhost:4567/`,
+  baseURL: "http://ec2-18-216-223-63.us-east-2.compute.amazonaws.com",
   timeout: 10000,
   headers: {
     // Authorization: `Token ${token}`,
@@ -31,7 +31,7 @@ const get = async (url, timeout = 10000) => {
 
 const post = async (url, reqParams, timeout = 10000) => {
   console.log('post', url, reqParams);
-  const res = await requests.post(url, reqParams);
+  const res = await requests.post(url, reqParams, { timeout });
   try {
     if (res.status === 201) {
       return res.data;
