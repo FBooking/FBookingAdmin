@@ -60,7 +60,7 @@ class TableAllDistrict extends Component {
                     type="primary"
                     style={{ marginBottom: 10 }}
                 >
-                    Thêm District
+                    Add District
                 </Button>
                 <Table
                     columns={columns}

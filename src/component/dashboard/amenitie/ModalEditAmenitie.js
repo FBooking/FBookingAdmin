@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Form, Switch, Input, Modal } from 'antd';
+import { omit } from 'lodash';
 
 import UploadImage from '../../common/UploadImage';
 import Fetch from '../../../core/services/fetch';
@@ -37,7 +38,7 @@ class ModalEditAmenitie extends Component {
         const { isUpdate, amenitie } = this.state;
         let response;
         if (isUpdate) response = await Fetch.put('amenitie', amenitie)
-        if (!isUpdate) response = await Fetch.post('amenitie', amenitie)
+        if (!isUpdate) response = await Fetch.post('amenitie', omit(amenitie, '_id'));
         if (response) {
             if (isUpdate) this.props.updateAmenitie(response);
             if (!isUpdate) this.props.addAmenitie(response);

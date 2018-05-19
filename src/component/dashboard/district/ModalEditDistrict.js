@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { omit } from 'lodash';
 import { Form, Input, Modal } from 'antd';
 
 import Fetch from '../../../core/services/fetch';
 
 const initialState = {
     district: {
+        _id: null,
         name: null,
         code: null,
     },
@@ -40,7 +42,7 @@ class ModalEditDistrict extends Component {
         const { isUpdate, district } = this.state;
         let response;
         if (isUpdate) response = await Fetch.put('district', district)
-        if (!isUpdate) response = await Fetch.post('district', district)
+        if (!isUpdate) response = await Fetch.post('district', omit(district), '_id')
         if (response) {
             if (isUpdate) this.props.updateDistrict(response);
             if (!isUpdate) this.props.addDistrict(response);

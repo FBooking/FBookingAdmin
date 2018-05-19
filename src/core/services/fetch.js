@@ -3,7 +3,7 @@ require('es6-promise').polyfill();
 require('isomorphic-fetch');
 
 const requests = axios.create({
-  baseURL: "http://ec2-18-216-223-63.us-east-2.compute.amazonaws.com",
+  baseURL: "http://localhost:4567",
   timeout: 10000,
   headers: {
     // Authorization: `Token ${token}`,

@@ -92,7 +92,7 @@ class TableAllStadiums extends Component {
 
         return (
             <React.Fragment>
-                <Button onClick={this.addCategory} type="primary" style={{ marginBottom: 10 }}>Thêm sân</Button>
+                <Button onClick={this.addCategory} type="primary" style={{ marginBottom: 10 }}>Add category</Button>
                 <ModalEditCategory
                     ref={(instance) => this.categoryModal = instance}
                     addCategory={this.addCategorySuccess}

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { omit } from 'lodash';
 import { Form, Switch, Input, Modal } from 'antd';
 
 import Fetch from '../../../core/services/fetch';
@@ -36,7 +37,7 @@ class ModalEditCategory extends Component {
         const { isUpdate, category } = this.state;
         let response;
         if (isUpdate) response = await Fetch.put('category', category)
-        if (!isUpdate) response = await Fetch.post('category', category)
+        if (!isUpdate) response = await Fetch.post('category', omit(category, '_id'))
         if (response) {
             if (isUpdate) this.props.updateCategory(response);
             if (!isUpdate) this.props.addCategory(response);
