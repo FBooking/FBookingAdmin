@@ -30,9 +30,10 @@ const MyMapComponent = compose(
 class MyFancyComponent extends React.PureComponent {
     constructor(props, context) {
         super(props, context);
+        const { latitude, longtitude } = this.props.position
         this.state = {
-            lat: this.props.position.latitude || 20.844911,
-            lng: this.props.position.longtitude || 106.688084,
+            lat: latitude || 21.027764,
+            lng: longtitude || 105.834160,
         }
         this.handleMarkerChange = this.handleMarkerChange.bind(this);
     }

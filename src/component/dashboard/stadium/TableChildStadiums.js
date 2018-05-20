@@ -4,26 +4,43 @@ import { Table, Icon, Divider, Switch, Button } from 'antd';
 
 import ModalEditChildStadium from './ModalEditChildStadium';
 import UploadImage from '../../common/UploadImage';
+import Fetch from '../../../core/services/fetch';
 
 class TableChildStadiums extends Component {
     constructor(props, context) {
         super(props, context);
-        this.confirmPayed = this.confirmPayed.bind(this);
+        this.changeActive = this.changeActive.bind(this);
         this.addChildStadium = this.addChildStadium.bind(this);
         this.updateChildStadium = this.updateChildStadium.bind(this);
     }
 
-    confirmPayed(childStadium, value) {
-        console.log(childStadium, value);
+    async changeActive(childStadium, value) {
+        const childStadiumData = { ...childStadium, isActive: value };
+        const response = await Fetch.put('/child-stadium', childStadiumData);
+        if (childStadium) this.props.updateChildStadium(response);
+        // console.log(childStadium, value);
     }
 
     addChildStadium() {
-        this.childStadiumModal.toggle();
+        const defaultDataChildStadium = {
+            _id: null,
+            stadiumId: this.props.stadiumId,
+            numberOfS: null,
+            isActive: null,
+            thumbnail: null,
+        }
+        this.childStadiumModal.open(defaultDataChildStadium);
     }
 
     updateChildStadium(childStadium) {
-        console.log(childStadium);
         this.childStadiumModal.open(childStadium, true);
+    }
+
+    async deleteChildStadium(childStadium) {
+        const response = await Fetch.Delete(`/child-stadium/${childStadium._id}`);
+        if (response.ok) {
+            this.props.deleteChildStaditum(childStadium);
+        }
     }
 
     render() {
@@ -40,7 +57,7 @@ class TableChildStadiums extends Component {
                 return (
                     <Switch
                         checked={value}
-                        onChange={(checked) => this.confirmPayed(childStadium, checked)}
+                        onChange={(checked) => this.changeActive(childStadium, checked)}
                     />)
             },
         }, {
@@ -60,6 +77,7 @@ class TableChildStadiums extends Component {
                     addChildStadium={addChildStadium}
                     updateChildStadium={updateChildStadium}
                 />
+                <Button onClick={this.addChildStadium} type="primary" style={{ marginBottom: 10 }}>Thêm sân con</Button>
                 <Table
                     columns={columns}
                     dataSource={data}
@@ -80,6 +98,8 @@ TableChildStadiums.propTypes = {
     data: PropTypes.array.isRequired,
     addChildStadium: PropTypes.func,
     updateChildStadium: PropTypes.func,
+    deleteChildStaditum: PropTypes.func,
+    stadiumId: PropTypes.string.isRequired,
 };
 
 export default TableChildStadiums;

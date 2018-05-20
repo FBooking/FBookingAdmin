@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { omit } from 'lodash';
 import { Modal, Button, Form, Switch, Input } from 'antd';
 
 import UploadImage from '../../common/UploadImage'
+import Fetch from '../../../core/services/fetch';
 
 class ModalEditChildStadium extends Component {
     constructor(props, context) {
@@ -12,6 +14,7 @@ class ModalEditChildStadium extends Component {
             isUpdate: false,
             childStadium: {
                 _id: null,
+                stadiumId: null,
                 numberOfS: null,
                 isActive: null,
                 thumbnail: null,
@@ -40,11 +43,13 @@ class ModalEditChildStadium extends Component {
         });
     }
 
-    handleOk() {
+    async handleOk() {
         if (this.state.isUpdate) {
-            this.props.updateChildStadium(this.state.childStadium)
+            const childStadium = await Fetch.put('/child-stadium', this.state.childStadium);
+            this.props.updateChildStadium(childStadium)
         } else {
-            this.props.addChildStadium(this.state.childStadium)
+            const childStadium = await Fetch.post('/child-stadium', omit(this.state.childStadium, '_id'));
+            this.props.addChildStadium(childStadium)
         }
         this.setState({ visible: false });
     }
@@ -66,17 +71,18 @@ class ModalEditChildStadium extends Component {
                 <Form onSubmit={this.handleOk}>
                     <FormItem
                         {...formItemLayout}
-                        label="Name"
+                        label="numberOfS"
                     >
                         <Input
                             onChange={(event) => this.handleChange('numberOfS', event.target.value)}
                             placeholder="Name"
+                            type="number"
                             value={numberOfS || ''}
                         />
                     </FormItem>
                     <FormItem
                         {...formItemLayout}
-                        label="Name"
+                        label="Active"
                     >
                         <Switch
                             checked={isActive}

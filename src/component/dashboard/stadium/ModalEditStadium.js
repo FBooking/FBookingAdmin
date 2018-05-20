@@ -7,24 +7,19 @@ import {
 } from 'antd';
 
 import UploadImage from '../../common/UploadImage'
+import GoogleMaps from '../../common/GoogleMaps';
 import Fetch from '../../../core/services/fetch'
 
 const initialState = {
     visible: false,
-    isUpdate: false,
+    districtDisplay: null,
     stadium: {
-        _id: null,
         name: null,
         address: null,
-        categoryId: null,
         districtId: null,
-        dealDate: null,
-        description: null,
-        thumbnail: null,
+        location: null,
         isActive: false,
     },
-    categoriesSelect: [],
-    districtSelect: [],
 }
 
 class ModalEditStadium extends Component {
@@ -32,18 +27,8 @@ class ModalEditStadium extends Component {
         super(props, context);
         this.state = initialState;
         this.toggle = this.toggle.bind(this);
-        this.handleOpen = this.handleOpen.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleOk = this.handleOk.bind(this);
-    }
-
-    handleOpen(stadium, isUpdate = false) {
-        const { categoryId, districtId } = stadium;
-        const categoriesSelect = categoryId.map((category, idx) => {
-            return category.name
-        })
-        const districtSelect = districtId.name;
-        this.setState({ stadium, visible: true, isUpdate, categoriesSelect, districtSelect });
     }
 
     toggle() {
@@ -53,24 +38,30 @@ class ModalEditStadium extends Component {
 
     handleChange(prop, value) {
         if (prop === 'districtId') {
-            console.log(value);
+            this.setState({
+                stadium: { ...this.state.stadium, [prop]: value.districtId },
+                districtDisplay: value.districtDisplay,
+            });
+        } else {
+            this.setState((prevState, props) => {
+                return {
+                    ...prevState,
+                    stadium: {
+                        ...this.state.stadium,
+                        [prop]: value
+                    }
+                };
+            });
         }
-        this.setState({
-            stadium: { ...this.state.stadium, [prop]: value }
-        });
     }
 
     async handleOk() {
         const { isUpdate, stadium } = this.state;
-        let response
-        if (!isUpdate) response = await Fetch.post('stadium', stadium)
-        if (isUpdate) response = await Fetch.put('stadium', stadium)
+        let response = await Fetch.post('stadium', stadium)
         if (response) {
-            if (!isUpdate) this.props.addStadium(response)
-            if (isUpdate) this.props.updateStadium(response)
+            this.props.addStadium(response)
             this.setState(initialState)
         }
-        console.log('stadium', stadium)
     }
 
     render() {
@@ -82,13 +73,15 @@ class ModalEditStadium extends Component {
             wrapperCol: { span: 14 },
         };
         const { categories, districts } = this.props;
-        const { name, address, categoryId, districtId, dealDate, description, thumbnail, isActive } = this.state.stadium
+        const { visible, districtDisplay, stadium } = this.state;
+        const { name, address, districtId, isActive, location } = stadium;
         return (
             <Modal
-                title={(this.state.isUpdate) ? 'Cập nhật thông tin sân' : 'Thêm sân'}
-                visible={this.state.visible}
+                title={'Thêm sân'}
+                visible={visible}
                 onOk={this.handleOk}
                 onCancel={this.toggle}
+                width={800}
             >
                 <Form onSubmit={this.handleSubmit}>
                     <FormItem
@@ -121,8 +114,10 @@ class ModalEditStadium extends Component {
                             <Select
                                 style={{ width: '100%' }}
                                 placeholder="Chọn khu vực"
-                                value={this.state.districtSelect}
-                                onChange={(value) => this.handleChange('districtId', value)}
+                                value={districtDisplay}
+                                onChange={(value, option) => {
+                                    this.handleChange('districtId', { districtId: value, districtDisplay: option.props.children })
+                                }}
                             >
                                 {(districts.map((district, idx) => {
                                     return (<Option key={district._id}>{district.name}</Option>)
@@ -130,72 +125,20 @@ class ModalEditStadium extends Component {
                             </Select>
                         }
                     </FormItem>
-
                     <FormItem
                         {...formItemLayout}
-                        label="Danh mục"
+                        label="Vị trí"
                     >
-                        {this.state.visible &&
-                            <Select
-                                mode="multiple"
-                                style={{ width: '100%' }}
-                                placeholder="Chọn danh mục"
-                                value={this.state.categoriesSelect}
-                                onChange={(value) => this.handleChange('categoryId', value)}
-                            >
-                                {(categories.map((category, idx) => {
-                                    return (<Option key={category._id}>{category.name}</Option>)
-                                }))}
-                            </Select>
-                        }
-                    </FormItem>
-
-                    <FormItem
-                        {...formItemLayout}
-                        label="Ngày ký hợp đồng"
-                    >
-                        <DatePicker
-                            style={{ width: '100%' }}
-                            placeholder="Chọn ngày"
-                            value={(dealDate ? moment(dealDate, 'YYYY/MM/DD') : null)}
-                            onChange={(time, timeString) => {
-                                console.log(timeString);
-                                this.handleChange('dealDate', timeString)
+                        <GoogleMaps
+                            onMarkerChange={this.changeLocation}
+                            onMarkerChange={(lat, lng) => {
+                                const lct = location || {
+                                    latitude: lat,
+                                    longtitude: lng
+                                }
+                                this.handleChange('location', lct)
                             }}
-                        />
-                    </FormItem>
-
-                    <FormItem
-                        {...formItemLayout}
-                        label="Mô tả"
-                    >
-                        <TextArea
-                            rows={4}
-                            value={description || ''}
-                            onChange={(event) => this.handleChange('description', event.target.value)}
-                        />
-                    </FormItem>
-
-
-                    <FormItem
-                        {...formItemLayout}
-                        label="Ảnh"
-                    >
-                        <div className="dropbox">
-                            <UploadImage
-                                changeFile={(imagesUrl) => this.handleChange('thumbnail', imagesUrl)}
-                                fileList={thumbnail || []}
-                            />
-                        </div>
-                    </FormItem>
-
-                    <FormItem
-                        {...formItemLayout}
-                        label="Active"
-                    >
-                        <Switch
-                            checked={isActive}
-                            onChange={(checked) => this.handleChange('isActive', checked)}
+                            position={location || {}}
                         />
                     </FormItem>
                 </Form>

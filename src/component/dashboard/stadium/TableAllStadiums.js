@@ -4,6 +4,7 @@ import { withRouter } from "react-router-dom";
 import { Table, Button, notification } from 'antd';
 
 import ModalEditStadium from './ModalEditStadium';
+import ModalEditChildStadium from './ModalEditChildStadium';
 import TableChildStadiums from './TableChildStadiums';
 import Fetch from '../../../core/services/fetch';
 
@@ -27,12 +28,15 @@ class TableAllStadiums extends Component {
         this.addStadiumSuccess = this.addStadiumSuccess.bind(this);
         this.updateStadiumSuccess = this.updateStadiumSuccess.bind(this);
         this.updateStadium = this.updateStadium.bind(this);
+        this.openModalAddChildStadium = this.openModalAddChildStadium.bind(this);
+        this.addChildStadiumSuccess = this.addChildStadiumSuccess.bind(this);
+        this.updateChildStadiumSuccess = this.updateChildStadiumSuccess.bind(this);
+        this.deleteChildStaditumSuccess = this.deleteChildStaditumSuccess.bind(this);
     }
 
     async componentDidMount() {
         const { page, perPage } = this.state;
         const stadiums = await Fetch.get(`stadiums/?page=${page}&perPage=${perPage}`);
-        console.log('stadiums', stadiums)
         const categories = await Fetch.get('categories');
         const districts = await Fetch.get('districts');
         this.setState({ stadiums, categories, districts })
@@ -70,20 +74,80 @@ class TableAllStadiums extends Component {
     addStadiumSuccess(stadium) {
         const { stadiums } = this.state
         const newStadiums = [...stadiums, stadium];
-        console.log('newStadiums', newStadiums)
         this.setState({ stadiums: newStadiums });
     }
 
     updateStadiumSuccess(stadium) {
-
+        const { stadiums } = this.state
+        stadiums.map
+        const newStadiums = stadiums.map((s) => {
+            if (s._id === stadium._id) {
+                return stadium;
+            }
+            return s;
+        })
+        this.setState({ stadiums: newStadiums });
     }
 
-    addChildStadium(stadiumId, childStadium) {
-        console.log(stadiumId, childStadium);
+    addChildStadiumSuccess(childStadium) {
+        const { stadiums } = this.state;
+        const newStadiums = stadiums.map((s) => {
+            if (s._id === childStadium.stadiumId) {
+                const newStadium = {
+                    ...s,
+                    childStadiums: [childStadium, ...s.childStadiums || []]
+                };
+                return newStadium;
+            }
+            return s;
+        })
+        this.setState({ stadiums: newStadiums });
     }
 
-    updateChildStadium(stadiumId, childStadium) {
-        console.log(stadiumId, childStadium);
+    updateChildStadiumSuccess(childStadium) {
+        const { stadiums } = this.state;
+        const newStadiums = stadiums.map((s) => {
+            if (s._id === childStadium.stadiumId) {
+                const newStadium = {
+                    ...s,
+                    childStadiums: s.childStadiums.map((cs) => {
+                        if (cs._id === childStadium._id) {
+                            return childStadium;
+                        }
+                        return cs;
+                    })
+                };
+                return newStadium;
+            }
+            return s;
+        })
+        this.setState({ stadiums: newStadiums });
+    }
+
+    deleteChildStaditumSuccess(childStadium) {
+        const { stadiums } = this.state;
+        const newStadiums = stadiums.map((s) => {
+            if (s._id === childStadium.stadiumId) {
+                const newStadium = {
+                    ...s,
+                    childStadiums: s.childStadiums.filter((cs) => cs._id !== childStadium._id),
+                };
+                return newStadium;
+            }
+            return s;
+        })
+        this.setState({ stadiums: newStadiums });
+    }
+
+    openModalAddChildStadium(stadium) {
+        const defaultDataStadium = {
+            _id: null,
+            stadiumId: stadium._id,
+            numberOfS: null,
+            isActive: null,
+            thumbnail: null,
+        };
+        this.childStadiumModal.open(defaultDataStadium);
     }
 
     render() {
@@ -95,7 +159,7 @@ class TableAllStadiums extends Component {
                 title: 'Action', dataIndex: '', key: 'x', render: (stadium) => {
                     return (
                         <React.Fragment>
-                            <Button icon="file-add" />
+                            <Button onClick={() => this.openModalAddChildStadium(stadium)} icon="file-add" />
                             <Button onClick={() => this.updateStadium(stadium)} icon="edit" style={{ marginLeft: 5 }} />
                             <Button onClick={() => this.deleteStadium(stadium)} icon="delete" style={{ marginLeft: 5 }} />
                         </React.Fragment>
@@ -114,6 +178,11 @@ class TableAllStadiums extends Component {
                     addStadium={this.addStadiumSuccess}
                     updateStadium={this.updateStadiumSuccess}
                 />
+                <ModalEditChildStadium
+                    ref={(instance) => this.childStadiumModal = instance}
+                    addChildStadium={this.addChildStadiumSuccess}
+                    updateChildStadium={this.updateChildStadiumSuccess}
+                />
                 <Table
                     columns={columns}
                     // expandedRowRender={record => <p style={{ margin: 0 }}>{record.description}</p>}
@@ -121,8 +190,10 @@ class TableAllStadiums extends Component {
                         return (
                             <TableChildStadiums
                                 data={record.childStadiums}
-                                addChildStadium={(childStadium) => this.addChildStadium(record._id, childStadium)}
-                                updateChildStadium={(childStadium) => this.updateChildStadium(record._id, childStadium)}
+                                addChildStadium={(childStadium) => this.addChildStadiumSuccess(childStadium)}
+                                updateChildStadium={(childStadium) => this.updateChildStadiumSuccess(childStadium)}
+                                deleteChildStaditum={(childStadium) => this.deleteChildStaditumSuccess(childStadium)}
+                                stadiumId={record._id}
                             />
                         )
                     }}

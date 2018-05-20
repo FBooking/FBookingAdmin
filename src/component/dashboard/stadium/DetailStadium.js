@@ -29,6 +29,7 @@ class DetailStadium extends Component {
                 amenitieIds: null,
                 thumbnail: null,
                 isActive: false,
+                childStadiums: [],
             },
             districtSelect: [],
             categoriesSelect: [],
@@ -36,12 +37,13 @@ class DetailStadium extends Component {
             fetched: false,
         }
         this.handleChange = this.handleChange.bind(this);
+        this.addChildStadiumSuccess = this.addChildStadiumSuccess.bind(this);
+        this.updateChildStadiumSuccess = this.updateChildStadiumSuccess.bind(this);
     }
 
     async componentWillMount() {
         const stadiumId = this.props.location.search.split('=').pop();
         const stadium = await Fetch.get(`stadium/${stadiumId}`);
-        console.log(stadium);
         const { districtId, categoryIds, amenitieIds } = stadium;
         const newStadium = {
             ...stadium,
@@ -71,7 +73,35 @@ class DetailStadium extends Component {
             this.setState({ categoriesSelect: newCategoriesSelect });
         }
         this.setState({ stadium: { ...this.state.stadium, [prop]: value } });
-        console.log('stadium', this.state.stadium);
+    }
+
+    addChildStadiumSuccess(childStadium) {
+        const { stadium } = this.state;
+        const { childStadiums } = stadium;
+        const newChildStadiums = [childStadium, ...childStadiums];
+        this.setState({
+            stadium: {
+                ...this.state.stadium,
+                childStadiums: newChildStadiums
+            }
+        });
+    }
+
+    updateChildStadiumSuccess(childStadium) {
+        const { stadium } = this.state;
+        const { childStadiums } = stadium;
+        const newChildStadiums = childStadiums.map((cs) => {
+            if (cs._id === childStadium._id) {
+                return childStadium
+            }
+            return cs;
+        })
+        this.setState({
+            stadium: {
+                ...this.state.stadium,
+                childStadiums: newChildStadiums
+            }
+        });
     }
 
     render() {
@@ -83,8 +113,7 @@ class DetailStadium extends Component {
             wrapperCol: { span: 14 },
         };
         const { districtSelect, categoriesSelect, stadium, fetched } = this.state;
-        const { name, address, dealDate, description, thumbnail, isActive, location, amentities } = stadium;
-        console.log('dealDate', dealDate);
+        const { _id, name, address, dealDate, description, thumbnail, isActive, location, amentities, childStadiums } = stadium;
         const { districts, categories } = this.props;
         return (
             <Form onSubmit={this.handleSubmit}>
@@ -140,7 +169,10 @@ class DetailStadium extends Component {
                                 onChange={(value) => this.handleChange('categoryId', value)}
                             >
                                 {(categories.map((category, idx) => {
-                                    return (<Option key={category._id}>{category.name}</Option>)
+                                    if (category.isActive) {
+                                        return (<Option key={category._id}>{category.name}</Option>)
+                                    }
+                                    return null;
                                 }))}
                             </Select>
                         </FormItem>
@@ -238,8 +270,14 @@ class DetailStadium extends Component {
                             {...formItemLayout}
                             label="Sân con"
                         >
-                            <TableChildStadiums />
+                            <TableChildStadiums
+                                data={childStadiums}
+                                stadiumId={_id}
+                                addChildStadium={this.addChildStadiumSuccess}
+                                updateChildStadium={this.updateChildStadiumSuccess}
+                            />
                         </FormItem>
+                        <Button type="primary">Save</Button>
                     </React.Fragment>
                 }
 
