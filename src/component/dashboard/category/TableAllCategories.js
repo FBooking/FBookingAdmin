@@ -56,11 +56,11 @@ class TableAllStadiums extends Component {
 
     updateCategorySuccess(category) {
         const { categories, categorySelect } = this.state;
-        const newCategories = categories.map((_, idx) => {
-            if (_ === categorySelect) {
+        const newCategories = categories.map((c, idx) => {
+            if (c._id === category._id) {
                 return category
             }
-            return _;
+            return c;
         });
         this.setState({ categories: newCategories });
     }
@@ -73,7 +73,10 @@ class TableAllStadiums extends Component {
                     return (
                         <Switch
                             checked={value}
-                        // onChange={(checked) => this.handleChange('isActive', checked)}
+                            onChange={async (checked) => {
+                                const response = await Fetch.put('/category', { ...category, isActive: checked })
+                                if (response) this.updateCategorySuccess(response);
+                            }}
                         />
                     )
                 }

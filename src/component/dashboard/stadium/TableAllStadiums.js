@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from "react-router-dom";
-import { Table, Button, notification } from 'antd';
+import { Table, Button, notification, Tooltip } from 'antd';
 
 import ModalEditStadium from './ModalEditStadium';
 import ModalEditChildStadium from './ModalEditChildStadium';
@@ -159,9 +159,15 @@ class TableAllStadiums extends Component {
                 title: 'Action', dataIndex: '', key: 'x', render: (stadium) => {
                     return (
                         <React.Fragment>
-                            <Button onClick={() => this.openModalAddChildStadium(stadium)} icon="file-add" />
-                            <Button onClick={() => this.updateStadium(stadium)} icon="edit" style={{ marginLeft: 5 }} />
-                            <Button onClick={() => this.deleteStadium(stadium)} icon="delete" style={{ marginLeft: 5 }} />
+                            <Tooltip title="Thêm sân con">
+                                <Button onClick={() => this.openModalAddChildStadium(stadium)} icon="file-add" />
+                            </Tooltip>
+                            <Tooltip title="Sửa sân">
+                                <Button onClick={() => this.updateStadium(stadium)} icon="edit" style={{ marginLeft: 5 }} />
+                            </Tooltip>
+                            <Tooltip title="Xóa sân">
+                                <Button onClick={() => this.deleteStadium(stadium)} icon="delete" style={{ marginLeft: 5 }} />
+                            </Tooltip>
                         </React.Fragment>
                     )
                 }

@@ -5,6 +5,7 @@ import { Layout, Menu, Breadcrumb, Icon } from 'antd';
 import TableAllStadiums from '../../component/dashboard/stadium/TableAllStadiums'
 import DetailStadium from '../../component/dashboard/stadium/DetailStadium'
 import TableAllCategories from '../../component/dashboard/category/TableAllCategories'
+import TableAllSession from '../../component/dashboard/session/TableAllSession'
 import TableAllAmenities from '../../component/dashboard/amenitie/TableAllAmenities'
 import TableAllDistrict from '../../component/dashboard/district/TableAllDistrict'
 import TableAllReservation from '../../component/dashboard/reservation/TableAllReservation'
@@ -96,6 +97,11 @@ class Dashboard extends Component {
                         categories={this.state.categories}
                         districts={this.state.districts}
                         amenities={this.state.amenities}
+                    />
+                }
+                {tab === 'session' &&
+                    <TableAllSession
+                        location={this.props.location}
                     />
                 }
                 {tab === 'category' &&
