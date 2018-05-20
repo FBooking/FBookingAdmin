@@ -17,7 +17,10 @@ const initialState = {
         name: null,
         address: null,
         districtId: null,
-        location: null,
+        location: {
+            latitude: 21.027764,
+            longtitude: 105.834160,
+        },
         isActive: false,
     },
 }
@@ -79,9 +82,18 @@ class ModalEditStadium extends Component {
             <Modal
                 title={'Thêm sân'}
                 visible={visible}
-                onOk={this.handleOk}
-                onCancel={this.toggle}
                 width={800}
+                footer={[
+                    <Button key="back" onClick={this.toggle}>Hủy bỏ</Button>,
+                    <Button
+                        key="submit"
+                        type="primary"
+                        disabled={(!name || !address || !districtId)}
+                        onClick={this.handleOk}
+                    >
+                        Thêm sân
+                    </Button>,
+                ]}
             >
                 <Form onSubmit={this.handleSubmit}>
                     <FormItem
@@ -130,7 +142,6 @@ class ModalEditStadium extends Component {
                         label="Vị trí"
                     >
                         <GoogleMaps
-                            onMarkerChange={this.changeLocation}
                             onMarkerChange={(lat, lng) => {
                                 const lct = location || {
                                     latitude: lat,

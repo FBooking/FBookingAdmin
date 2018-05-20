@@ -84,7 +84,11 @@ class TableChildStadiums extends Component {
                     pagination={false}
                     expandedRowRender={record =>
                         <UploadImage
-                            changeFile={(imagesUrl) => this.handleChange('thumbnail', imagesUrl)}
+                            changeFile={async (thumbnail) => {
+                                const childStadium = { ...record, thumbnail };
+                                const response = Fetch.put('/child-stadium', childStadium);
+                                if (response) this.props.updateChildStadium(response)
+                            }}
                             fileList={record.thumbnail || []}
                         />
                     }

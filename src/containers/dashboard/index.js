@@ -95,6 +95,7 @@ class Dashboard extends Component {
                         location={this.props.location}
                         categories={this.state.categories}
                         districts={this.state.districts}
+                        amenities={this.state.amenities}
                     />
                 }
                 {tab === 'category' &&

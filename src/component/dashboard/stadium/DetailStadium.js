@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
+import { withRouter } from "react-router-dom";
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import {
     Form, Select, InputNumber, Switch, Radio, Input, DatePicker,
-    Slider, Button, Upload, Icon, Rate, Modal,
+    Slider, Button, Upload, Icon, Rate, Modal, Checkbox, Row, Col
 } from 'antd';
 
 import TableChildStadiums from './TableChildStadiums';
@@ -31,7 +32,7 @@ class DetailStadium extends Component {
                 isActive: false,
                 childStadiums: [],
             },
-            districtSelect: [],
+            districtSelect: null,
             categoriesSelect: [],
             amenitiesSelect: [],
             fetched: false,
@@ -39,16 +40,18 @@ class DetailStadium extends Component {
         this.handleChange = this.handleChange.bind(this);
         this.addChildStadiumSuccess = this.addChildStadiumSuccess.bind(this);
         this.updateChildStadiumSuccess = this.updateChildStadiumSuccess.bind(this);
+        this.updateStadium = this.updateStadium.bind(this);
     }
 
     async componentWillMount() {
         const stadiumId = this.props.location.search.split('=').pop();
         const stadium = await Fetch.get(`stadium/${stadiumId}`);
+        console.log('stadium', stadium);
         const { districtId, categoryIds, amenitieIds } = stadium;
         const newStadium = {
             ...stadium,
             districtId: districtId._id,
-            categoryId: categoryIds.map((c) => c._id),
+            categoryIds: categoryIds.map((c) => c._id),
             amenitieIds: amenitieIds.map((a) => a._id)
         };
         // console.log(newStadium);
@@ -66,11 +69,6 @@ class DetailStadium extends Component {
         if (prop === 'districtId') {
             const district = this.props.districts.find((d) => d._id === value);
             this.setState({ districtSelect: district.name });
-        } else if (prop === 'categoryId') {
-            const categoryId = value.pop();
-            const category = this.props.categories.find((c) => c._id === categoryId);
-            const newCategoriesSelect = [...this.state.categoriesSelect, category.name];
-            this.setState({ categoriesSelect: newCategoriesSelect });
         }
         this.setState({ stadium: { ...this.state.stadium, [prop]: value } });
     }
@@ -104,6 +102,12 @@ class DetailStadium extends Component {
         });
     }
 
+    async updateStadium() {
+        const stadium = await Fetch.put('/stadium', this.state.stadium);
+        this.props.history.push('/dashboard/stadium')
+        console.log('updateStadium', stadium);
+    }
+
     render() {
         const FormItem = Form.Item;
         const Option = Select.Option;
@@ -113,8 +117,8 @@ class DetailStadium extends Component {
             wrapperCol: { span: 14 },
         };
         const { districtSelect, categoriesSelect, stadium, fetched } = this.state;
-        const { _id, name, address, dealDate, description, thumbnail, isActive, location, amentities, childStadiums } = stadium;
-        const { districts, categories } = this.props;
+        const { _id, name, address, districtId, categoryIds, location, dealDate, description, amenitieIds, thumbnail, isActive, childStadiums } = stadium;
+        const { districts, categories, amenities } = this.props;
         return (
             <Form onSubmit={this.handleSubmit}>
                 {fetched &&
@@ -161,37 +165,52 @@ class DetailStadium extends Component {
                             {...formItemLayout}
                             label="Danh mục"
                         >
-                            <Select
-                                mode="multiple"
+                            <Checkbox.Group
                                 style={{ width: '100%' }}
-                                placeholder="Danh mục"
-                                defaultValue={categoriesSelect}
-                                onChange={(value) => this.handleChange('categoryId', value)}
+                                onChange={(value) => this.handleChange('categoryIds', value)}
+                                value={categoryIds}
                             >
-                                {(categories.map((category, idx) => {
-                                    if (category.isActive) {
-                                        return (<Option key={category._id}>{category.name}</Option>)
-                                    }
-                                    return null;
-                                }))}
-                            </Select>
+                                <Row>
+                                    {(categories.map((category, idx) => {
+                                        if (category.isActive) {
+                                            return (<Col span={8} key={idx}>
+                                                <Checkbox
+                                                    value={category._id}
+                                                >
+                                                    {category.name}
+                                                </Checkbox>
+                                            </Col>)
+                                        }
+                                        return null;
+                                    }))}
+                                </Row>
+                            </Checkbox.Group>
                         </FormItem>
-                        {/* <FormItem
+                        <FormItem
                             {...formItemLayout}
                             label="Dịch vụ"
                         >
-                            <Select
-                                mode="tags"
+                            <Checkbox.Group
                                 style={{ width: '100%' }}
-                                placeholder="Dịch vụ"
-                                defaultValue={categoriesSelect}
-                                onChange={(value) => this.handleChange('categoryId', value)}
+                                onChange={(value) => this.handleChange('amenitieIds', value)}
+                                value={amenitieIds}
                             >
-                                {(amentities.map((amentitie, idx) => {
-                                    return (<Option key={amentitie._id}>{amentitie.name}</Option>)
-                                }))}
-                            </Select>
-                        </FormItem> */}
+                                <Row>
+                                    {(amenities.map((amenitie, idx) => {
+                                        if (amenitie.isActive) {
+                                            return (<Col span={8} key={idx}>
+                                                <Checkbox
+                                                    value={amenitie._id}
+                                                >
+                                                    {amenitie.name}
+                                                </Checkbox>
+                                            </Col>)
+                                        }
+                                        return null;
+                                    }))}
+                                </Row>
+                            </Checkbox.Group>
+                        </FormItem>
 
                         <FormItem
                             {...formItemLayout}
@@ -200,7 +219,7 @@ class DetailStadium extends Component {
                             <DatePicker
                                 style={{ width: '100%' }}
                                 placeholder="Chọn ngày"
-                                defaultValue={moment('2018-05-12', 'YYYY/MM/DD')}
+                                defaultValue={moment(dealDate || '2018-05-12', 'YYYY/MM/DD')}
                                 onChange={(time, timeString) => {
                                     console.log(timeString);
                                     this.handleChange('dealDate', timeString)
@@ -224,15 +243,14 @@ class DetailStadium extends Component {
                             label="Vị trí"
                         >
                             <GoogleMaps
-                                onMarkerChange={this.changeLocation}
                                 onMarkerChange={(lat, lng) => {
-                                    const lct = location || {
+                                    const lct = {
                                         latitude: lat,
                                         longtitude: lng
                                     }
                                     this.handleChange('location', lct)
                                 }}
-                                position={location}
+                                position={location || {}}
                             />
                         </FormItem>
                         <FormItem
@@ -256,15 +274,6 @@ class DetailStadium extends Component {
                                 onChange={(checked) => this.handleChange('isActive', checked)}
                             />
                         </FormItem>
-                        {/* <hr />
-                        <FormItem
-                            {...formItemLayout}
-                            label="Dịch vụ"
-                        >
-                            <TableAmenities
-                                data={amentities}
-                            />
-                        </FormItem> */}
                         <hr />
                         <FormItem
                             {...formItemLayout}
@@ -277,7 +286,7 @@ class DetailStadium extends Component {
                                 updateChildStadium={this.updateChildStadiumSuccess}
                             />
                         </FormItem>
-                        <Button type="primary">Save</Button>
+                        <Button onClick={this.updateStadium} type="primary">Save</Button>
                     </React.Fragment>
                 }
 
@@ -288,8 +297,10 @@ class DetailStadium extends Component {
 
 DetailStadium.propTypes = {
     location: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired,
     categories: PropTypes.array.isRequired,
+    amenities: PropTypes.array.isRequired,
     districts: PropTypes.array.isRequired,
 };
 
-export default DetailStadium;
+export default withRouter(DetailStadium);

@@ -73,10 +73,13 @@ class TableAllAmenities extends Component {
                     columns={columns}
                     expandedRowRender={record =>
                         <UploadImage
-                            changeFile={(imagesUrl) => this.handleChange('thumbnail', imagesUrl)}
+                            changeFile={async (thumbnail) => {
+                                const amenitie = { ...record, thumbnail }
+                                const response = await Fetch.put('amenitie', amenitie)
+                                if (response) this.props.updateAmenitie(response);
+                            }}
                             fileList={record.thumbnail || []}
-                        />
-                    }
+                        />}
                     dataSource={this.props.data}
                 />
             </React.Fragment>
